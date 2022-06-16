@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "dev": "node server.js NODE_ENV=development",
+    "dev": "nodemon server.js NODE_ENV=development",
     "start": "node server.js"
   },
   "keywords": [],
