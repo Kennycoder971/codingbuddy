@@ -2,15 +2,15 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
 const UserSchema = new mongoose.Schema({
-  userName: {
+  username: {
     type: String,
     required: [true, "Veuillez ajouter un nom d'utilisateur"],
     unique: [true, "Ce nom d'utilisateur existe déjà"],
   },
-  firstName: {
+  firstname: {
     type: String,
   },
-  lastName: {
+  lastname: {
     type: String,
   },
   email: {
