@@ -5,6 +5,7 @@ const path = require("path");
 const colors = require("colors");
 const fileupload = require("express-fileupload");
 const morgan = require("morgan");
+const errorHandler = require("./middlewares/errorHandler");
 
 const connectDB = require("./configs/db");
 
@@ -33,6 +34,9 @@ app.use(fileupload());
 
 // Use the routes
 app.use("/api/v1/users", userRoute);
+
+// Handler errors
+app.use(errorHandler);
 
 const server = app.listen(
   PORT,
