@@ -28,12 +28,7 @@ exports.createUser = asyncHandler(async (req, res, next) => {
 });
 
 exports.getUsers = asyncHandler(async (req, res, next) => {
-  const users = await User.find({});
-
-  res.status(201).json({
-    success: true,
-    data: users,
-  });
+  res.status(201).json(res.advancedResults);
 });
 
 exports.getUser = asyncHandler(async (req, res, next) => {

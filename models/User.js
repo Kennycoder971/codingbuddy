@@ -41,16 +41,16 @@ const UserSchema = new mongoose.Schema({
   },
   bio: String,
   saves: {
-    type: Array,
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
   },
   reposts: {
-    type: Array,
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
   },
   following: {
-    type: Array,
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   },
   followers: {
-    type: Array,
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   },
 });
 

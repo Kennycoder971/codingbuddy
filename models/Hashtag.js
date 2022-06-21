@@ -8,4 +8,4 @@ const HashTagSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("Post", HashTagSchema);
+module.exports = mongoose.model("Hashtag", HashTagSchema);

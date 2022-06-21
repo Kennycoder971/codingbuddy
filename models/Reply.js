@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const ReplySchema = new mongoose.Schema({
   image: String,
-  likes: Array,
+  likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Like" }],
   text: {
     type: String,
     required: [true, "Veuillez ajouter du texte"],
@@ -10,8 +10,8 @@ const ReplySchema = new mongoose.Schema({
   },
   ownerId: mongoose.Types.ObjectId,
   replyTo: mongoose.Types.ObjectId,
-  hashtags: Array,
-  replies: Array,
+  hashtags: [{ type: mongoose.Schema.Types.ObjectId, ref: "Hashtag" }],
+  replies: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
   createdAt: {
     type: Date,
     default: Date.now,
