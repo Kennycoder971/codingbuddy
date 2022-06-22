@@ -7,14 +7,20 @@ exports.protect = asyncHandler(async (req, res, next) => {
   let token;
 
   if (
-    req.headers.autorization &&
-    req.headers.autorization.startsWith("Bearer")
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
   ) {
-    token = req.headers.autorization.split(" ")[1];
+    token = req.headers.authorization.split(" ")[1];
+    console.log(token);
   }
 
   if (!token) {
-    return next(new ErrorResponse("Not authorized to access this route", 401));
+    return next(
+      new ErrorResponse(
+        "Vous n'êtes pas authorisés à accéder à cette route",
+        401
+      )
+    );
   }
 
   try {
@@ -23,6 +29,11 @@ exports.protect = asyncHandler(async (req, res, next) => {
     req.user = await User.findById(decoded.id);
     next();
   } catch (error) {
-    return next(new ErrorResponse("Not authorized to access this route", 401));
+    return next(
+      new ErrorResponse(
+        "Vous n'êtes pas authorisés à accéder à cette route",
+        401
+      )
+    );
   }
 });
