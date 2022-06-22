@@ -6,6 +6,7 @@ const colors = require("colors");
 const fileupload = require("express-fileupload");
 const morgan = require("morgan");
 const errorHandler = require("./middlewares/errorHandler");
+const cookieParser = require("cookie-parser");
 
 const connectDB = require("./configs/db");
 
@@ -20,9 +21,13 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // Load routes
 const userRoute = require("./routes/user");
+const authRoute = require("./routes/auth");
 
 // Body parser
 app.use(express.json());
+
+// Cookie parser
+app.use(cookieParser());
 
 // Dev logging middleware
 if (process.env.NODE_ENV === "development") {
@@ -34,6 +39,7 @@ app.use(fileupload());
 
 // Use the routes
 app.use("/api/v1/users", userRoute);
+app.use("/api/v1/auth", authRoute);
 
 // Handler errors
 app.use(errorHandler);
