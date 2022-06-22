@@ -2,6 +2,12 @@ const asyncHandler = require("../middlewares/asyncHandler");
 const User = require("../models/User");
 const ErrorResponse = require("../utils/errorResponse");
 
+/**
+ * @date      2022-06-22
+ * @desc      Create user
+ * @route     POST /api/v1/users
+ * @access    Public
+ */
 exports.createUser = asyncHandler(async (req, res, next) => {
   let user;
   const { username, email } = req.body;
@@ -27,6 +33,12 @@ exports.createUser = asyncHandler(async (req, res, next) => {
   });
 });
 
+/**
+ * @date      2022-06-22
+ * @desc      Get users
+ * @route     GET /api/v1/users
+ * @access    Public
+ */
 exports.getUsers = asyncHandler(async (req, res, next) => {
   res.status(201).json(res.advancedResults);
 });
@@ -44,6 +56,12 @@ exports.getUser = asyncHandler(async (req, res, next) => {
   });
 });
 
+/**
+ * @date      2022-06-22
+ * @desc      Update user
+ * @route     PUT /api/v1/users
+ * @access    Private
+ */
 exports.updateUser = asyncHandler(async (req, res, next) => {
   let user = await User.findById(req.params.id);
 
@@ -62,6 +80,12 @@ exports.updateUser = asyncHandler(async (req, res, next) => {
   });
 });
 
+/**
+ * @date      2022-06-22
+ * @desc      Register user
+ * @route     DELETE /api/v1/users
+ * @access    Private
+ */
 exports.deleteUser = asyncHandler(async (req, res, next) => {
   await User.findByIdAndDelete(req.params.id);
 

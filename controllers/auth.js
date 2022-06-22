@@ -3,6 +3,12 @@ const ErrorResponse = require("../utils/errorResponse");
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 
+/**
+ * @date      2022-06-22
+ * @desc      Register user
+ * @route     GET /api/v1/auth/register
+ * @access    Public
+ */
 exports.register = asyncHandler(async (req, res, next) => {
   const { username, email } = req.body;
 
@@ -23,6 +29,12 @@ exports.register = asyncHandler(async (req, res, next) => {
   sendTokenResponse(user, 201, res);
 });
 
+/**
+ * @date      2022-06-22
+ * @desc      Log user in
+ * @route     POST /api/v1/auth/login
+ * @access    Public
+ */
 exports.login = asyncHandler(async (req, res, next) => {
   let user;
   const { email, password } = req.body;
@@ -49,6 +61,29 @@ exports.login = asyncHandler(async (req, res, next) => {
 
   sendTokenResponse(user, 200, res);
 });
+
+/**
+ * @date      2022-06-22
+ * @desc      Log user out / clear cookie
+ * @route     GET /api/v1/auth/logout
+ * @access    Public
+ */
+exports.logout = asyncHandler(async (req, res, next) => {
+  res.cookie("token", "none", {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true,
+  });
+
+  res.status(200).json({
+    success: true,
+    data: {},
+  });
+});
+
+/**
+ * @date 2022-06-22
+ * @desc Get token from model, create cookie and send response
+ */
 
 const sendTokenResponse = (user, statusCode, res) => {
   const token = user.getSignedJwtToken();
