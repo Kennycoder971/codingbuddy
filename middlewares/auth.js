@@ -37,3 +37,18 @@ exports.protect = asyncHandler(async (req, res, next) => {
     );
   }
 });
+
+// Grant access to specific roles
+exports.authorize = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new ErrorResponse(
+          `Un utilisateur avec le rôle :${req.user.role} ne peut pas accéder à cette route route`,
+          403
+        )
+      );
+    }
+    next();
+  };
+};

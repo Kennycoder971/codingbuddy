@@ -59,7 +59,7 @@ exports.getUser = asyncHandler(async (req, res, next) => {
 /**
  * @date      2022-06-22
  * @desc      Update user
- * @route     PUT /api/v1/users
+ * @route     PUT /api/v1/users/:id
  * @access    Private
  */
 exports.updateUser = asyncHandler(async (req, res, next) => {
@@ -67,6 +67,13 @@ exports.updateUser = asyncHandler(async (req, res, next) => {
 
   if (!user) {
     return next(new ErrorResponse("Cet utilisateur n'existe pas"), 404);
+  }
+
+  if (req.user.id !== req.params.id) {
+    return next(
+      new ErrorResponse("Vous n'êtes pas autorisé à modifier cet utilisateur"),
+      403
+    );
   }
 
   user = await User.findByIdAndUpdate(req.params.id, req.body, {
@@ -83,10 +90,23 @@ exports.updateUser = asyncHandler(async (req, res, next) => {
 /**
  * @date      2022-06-22
  * @desc      Register user
- * @route     DELETE /api/v1/users
+ * @route     DELETE /api/v1/users/:id
  * @access    Private
  */
 exports.deleteUser = asyncHandler(async (req, res, next) => {
+  let user = await User.findById(req.params.id);
+
+  if (!user) {
+    return next(new ErrorResponse("Cet utilisateur n'existe pas"), 404);
+  }
+
+  if (req.user.id !== req.params.id) {
+    return next(
+      new ErrorResponse("Vous n'êtes pas autorisé à supprimer cet utilisateur"),
+      403
+    );
+  }
+
   await User.findByIdAndDelete(req.params.id);
 
   res.status(200).json({
