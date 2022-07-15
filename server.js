@@ -23,6 +23,7 @@ app.use(express.static(path.join(__dirname, "public")));
 const userRoute = require("./routes/user");
 const authRoute = require("./routes/auth");
 const postRoute = require("./routes/post");
+const replyRoute = require("./routes/reply");
 
 // Body parser
 app.use(express.json());
@@ -42,6 +43,7 @@ app.use(fileupload());
 app.use("/api/v1/users", userRoute);
 app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/posts", postRoute);
+app.use("/api/v1/replies", replyRoute);
 
 // Handler errors
 app.use(errorHandler);
