@@ -1,5 +1,10 @@
 const express = require("express");
-const { createPost, getPosts } = require("../controllers/post");
+const {
+  createPost,
+  getPosts,
+  updatePost,
+  deletePost,
+} = require("../controllers/post");
 const { protect, authorize } = require("../middlewares/auth");
 const router = express.Router({ mergeParams: true });
 const advancedResults = require("../middlewares/advancedResults");
@@ -17,5 +22,7 @@ router
     getPosts
   )
   .post(authorize("user", "admin"), createPost);
+
+router.route("/:id").put(updatePost).delete(deletePost);
 
 module.exports = router;

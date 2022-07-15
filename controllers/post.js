@@ -38,3 +38,64 @@ exports.createPost = asyncHandler(async (req, res, next) => {
     data: post,
   });
 });
+
+/**
+ * @date      2022-06-22
+ * @desc      Update post
+ * @route     PUT /api/v1/posts/:id
+ * @access    Private
+ */
+exports.updatePost = asyncHandler(async (req, res, next) => {
+  const connectedUser = req.user;
+
+  let post = await Post.findById(req.params.id);
+
+  if (!post) {
+    return next(new ErrorResponse("Ce post n'existe pas"), 400);
+  }
+
+  post = await Post.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+  });
+
+  if (connectedUser.id.toString() !== post.owner.toString()) {
+    return next(
+      new ErrorResponse("Vous n'êtes pas autorisé à modifier ce post"),
+      403
+    );
+  }
+  res.status(201).json({
+    success: true,
+    data: post,
+  });
+});
+
+/**
+ * @date      2022-06-22
+ * @desc      Update post
+ * @route     DELETE /api/v1/posts/:id
+ * @access    Private
+ */
+exports.deletePost = asyncHandler(async (req, res, next) => {
+  const connectedUser = req.user;
+
+  let post = await Post.findById(req.params.id);
+
+  if (!post) {
+    return next(new ErrorResponse("Ce post n'existe pas"), 400);
+  }
+
+  post = await Post.findByIdAndDelete(req.params.id);
+
+  if (connectedUser.id.toString() !== post.owner.toString()) {
+    return next(
+      new ErrorResponse("Vous n'êtes pas autorisé à modifier ce post"),
+      403
+    );
+  }
+  res.status(201).json({
+    success: true,
+    data: {},
+  });
+});
