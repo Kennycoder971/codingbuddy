@@ -8,7 +8,11 @@ const PostSchema = new mongoose.Schema({
     required: [true, "Veuillez ajouter du texte"],
     maxlength: [777, "La limite est de 777 charactères"],
   },
-  ownerId: mongoose.Types.ObjectId,
+  owner: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
   hashtags: [{ type: mongoose.Schema.Types.ObjectId, ref: "Hashtag" }],
   replies: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
   createdAt: {

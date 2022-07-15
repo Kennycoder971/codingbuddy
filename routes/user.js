@@ -2,6 +2,7 @@ const express = require("express");
 const User = require("../models/User");
 const advancedResults = require("../middlewares/advancedResults");
 const { protect, authorize } = require("../middlewares/auth");
+const postRouter = require("./post");
 const {
   createUser,
   getUsers,
@@ -10,6 +11,9 @@ const {
   deleteUser,
 } = require("../controllers/user");
 const router = express.Router();
+
+// Re-route into other resource routers
+router.use("/:userId/posts", postRouter);
 
 router.route("/").get(advancedResults(User), getUsers).post(createUser);
 

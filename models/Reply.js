@@ -8,7 +8,7 @@ const ReplySchema = new mongoose.Schema({
     required: [true, "Veuillez ajouter du texte"],
     maxlength: [777, "La limite est de 777 charactères"],
   },
-  ownerId: mongoose.Types.ObjectId,
+  owner: mongoose.Types.ObjectId,
   replyTo: mongoose.Types.ObjectId,
   hashtags: [{ type: mongoose.Schema.Types.ObjectId, ref: "Hashtag" }],
   replies: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
