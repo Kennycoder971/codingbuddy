@@ -22,6 +22,7 @@ app.use(express.static(path.join(__dirname, "public")));
 // Load routes
 const userRoute = require("./routes/user");
 const authRoute = require("./routes/auth");
+const postRoute = require("./routes/post");
 
 // Body parser
 app.use(express.json());
@@ -40,6 +41,7 @@ app.use(fileupload());
 // Use the routes
 app.use("/api/v1/users", userRoute);
 app.use("/api/v1/auth", authRoute);
+app.use("/api/v1/posts", postRoute);
 
 // Handler errors
 app.use(errorHandler);
