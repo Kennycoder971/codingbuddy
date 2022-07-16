@@ -4,7 +4,7 @@ const ErrorResponse = require("../utils/errorResponse");
 
 // @desc      Get posts
 // @route     GET /api/v1/posts
-// @route     GET /api/v1/users/:-/posts
+// @route     GET /api/v1/users/:userId/posts
 // @access    Public
 exports.getPosts = asyncHandler(async (req, res, next) => {
   if (req.params.userId) {
@@ -90,7 +90,7 @@ exports.deletePost = asyncHandler(async (req, res, next) => {
 
   if (connectedUser.id.toString() !== post.owner.toString()) {
     return next(
-      new ErrorResponse("Vous n'êtes pas autorisé à modifier ce post"),
+      new ErrorResponse("Vous n'êtes pas autorisé à supprimer ce post"),
       403
     );
   }

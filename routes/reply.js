@@ -1,20 +1,29 @@
 const express = require("express");
-const { createReplyToPost } = require("../controllers/reply");
+const {
+  createReplyToPost,
+  getReplies,
+  getReplyById,
+  updateReply,
+  addReplyToReply,
+  deleteReply,
+} = require("../controllers/reply");
 const { protect, authorize } = require("../middlewares/auth");
 const router = express.Router({ mergeParams: true });
 const advancedResults = require("../middlewares/advancedResults");
 const Post = require("../models/Post");
-
-router.use(protect);
+const Reply = require("../models/Reply");
 
 router
   .route("/")
-  .get(
-    advancedResults(Post, {
-      path: "owner",
-      select: "username",
-    })
-  )
-  .post(authorize("user", "admin"), createReplyToPost);
+  .get(advancedResults(Reply), getReplies)
+  .post(protect, authorize("user", "admin"), createReplyToPost);
+
+router
+  .route("/:id")
+  .get(getReplyById)
+  .put(protect, updateReply)
+  .delete(protect, deleteReply);
+
+router.route("/:replyId/re-reply").post(protect, addReplyToReply);
 
 module.exports = router;
