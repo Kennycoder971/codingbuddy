@@ -247,3 +247,106 @@ exports.userCoverUpload = asyncHandler(async (req, res, next) => {
     });
   });
 });
+
+/**
+ * @date      2022-06-22
+ * @desc      Save a post for a user
+ * @route     PUT /api/v1/users/:id/save
+ * @access    Private
+ */
+exports.save = asyncHandler(async (req, res, next) => {
+  let user = await User.findById(req.params.id);
+
+  if (!user) {
+    return next(new ErrorResponse("Cet utilisateur n'existe pas"), 404);
+  }
+
+  if (req.user.id !== req.params.id) {
+    return next(
+      new ErrorResponse("Vous n'êtes pas autorisé à modifier cet utilisateur"),
+      403
+    );
+  }
+
+  // Check if the post as alerady been saved
+  const isPostExists = user.saves.find((postId) => {
+    // Expect a postId in body
+    return postId.toString() === req.body.postId.toString();
+  });
+
+  if (!isPostExists) {
+    user.saves.push(req.body.postId);
+    await user.save();
+  }
+
+  res.status(201).json({
+    success: true,
+    data: user.saves,
+  });
+});
+
+/**
+ * @date      2022-06-22
+ * @desc      Remove a post in saves array for a user
+ * @route     DELETE /api/v1/users/:id/save
+ * @access    Private
+ */
+exports.unsave = asyncHandler(async (req, res, next) => {
+  let user = await User.findById(req.params.id);
+
+  if (!user) {
+    return next(new ErrorResponse("Cet utilisateur n'existe pas"), 404);
+  }
+
+  if (req.user.id !== req.params.id) {
+    return next(
+      new ErrorResponse("Vous n'êtes pas autorisé à modifier cet utilisateur"),
+      403
+    );
+  }
+
+  // Expect a postId in body
+  await user.update({ $pull: { saves: req.body.postId } });
+
+  res.status(201).json({
+    success: true,
+    data: {},
+  });
+});
+
+/**
+ * @date      2022-06-22
+ * @desc      Save a post for a user
+ * @route     PUT /api/v1/users/:id/follow
+ * @access    Private
+ */
+exports.addFollow = asyncHandler(async (req, res, next) => {
+  let user = await User.findById(req.params.id);
+
+  if (!user) {
+    return next(new ErrorResponse("Cet utilisateur n'existe pas"), 404);
+  }
+
+  if (req.user.id !== req.params.id) {
+    return next(
+      new ErrorResponse("Vous n'êtes pas autorisé à modifier cet utilisateur"),
+      403
+    );
+  }
+
+  // Check if the post as alerady been saved
+  const isPostExists = user.saves.find((postId) => {
+    // Expect a postId in body
+    return postId.toString() === req.body.postId.toString();
+  });
+
+  if (!isPostExists) {
+    user.saves.push(req.body.postId);
+    await user.save();
+  }
+
+  res.status(201).json({
+    success: true,
+    data: user.saves,
+  });
+});

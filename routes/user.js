@@ -11,6 +11,8 @@ const {
   deleteUser,
   userPhotoUpload,
   userCoverUpload,
+  save,
+  unsave,
 } = require("../controllers/user");
 const router = express.Router();
 
@@ -24,6 +26,8 @@ router
   .get(getUser)
   .put(protect, updateUser)
   .delete(protect, deleteUser);
+
+router.route("/:id/save").put(protect, save).delete(protect, unsave);
 
 router.route("/:id/photo").put(protect, userPhotoUpload);
 router.route("/:id/cover").put(protect, userCoverUpload);
