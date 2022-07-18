@@ -10,8 +10,11 @@ const {
 const { protect, authorize } = require("../middlewares/auth");
 const router = express.Router({ mergeParams: true });
 const advancedResults = require("../middlewares/advancedResults");
-const Post = require("../models/Post");
+const likeRouter = require("./like");
+
 const Reply = require("../models/Reply");
+
+router.use("/:replyId/likes", likeRouter);
 
 router
   .route("/")

@@ -1,8 +1,14 @@
 const mongoose = require("mongoose");
 
 const Like = new mongoose.Schema({
-  owner: mongoose.Types.ObjectId,
-  likeTo: mongoose.Types.ObjectId,
+  owner: {
+    type: mongoose.Types.ObjectId,
+    required: true,
+  },
+  likeTo: {
+    type: mongoose.Types.ObjectId,
+    required: true,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
