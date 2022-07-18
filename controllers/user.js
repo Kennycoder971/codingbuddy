@@ -168,7 +168,12 @@ exports.userPhotoUpload = asyncHandler(async (req, res, next) => {
   file.mv(`${process.env.FILE_UPLOAD_PATH}/${file.name}`, async (err) => {
     if (err) {
       console.error(err);
-      return next(new ErrorResponse(`Problem with file upload`, 500));
+      return next(
+        new ErrorResponse(
+          `Une erreur est survenue durant le transfert d'image`,
+          500
+        )
+      );
     }
 
     await User.findByIdAndUpdate(req.params.id, { profilePicture: file.name });
@@ -216,7 +221,7 @@ exports.userCoverUpload = asyncHandler(async (req, res, next) => {
   // Check filesize
   if (file.size > process.env.MAX_FILE_UPLOAD)
     return next(
-      new ErrorResponse(`Veuillez envoyer une image de 2Mo ou moins`, 400)
+      new ErrorResponse(`Veuillez envoyer une image de 1Mo ou moins`, 400)
     );
 
   // Create custom filename
