@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const Like = new mongoose.Schema({
+const LikeSchema = new mongoose.Schema({
   owner: {
     type: mongoose.Types.ObjectId,
     required: true,
@@ -15,4 +15,4 @@ const Like = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("Like", Like);
+module.exports = mongoose.model("Like", LikeSchema);

@@ -44,38 +44,138 @@ exports.createLike = asyncHandler(async (req, res, next) => {
   req.body.owner = connectedUser.id;
 
   if (req.params.postId) {
-    const post = await Post.find({ id: req.params.postId });
+    const post = await Post.findById(req.params.postId);
+
+    if (!post) {
+      return next(new ErrorResponse("Le post n'existe pas.", 404));
+    }
+
+    let like;
 
     // Fill required field for like
     req.body.likeTo = post.id;
 
-    const like = await Like.create(req.body);
+    // Check if the user has already liked this post
+    // If not add a like to it
+    like = await Like.findOne({ owner: connectedUser.id, likeTo: post.id });
+    if (!like) {
+      like = await Like.create(req.body);
+      post.likes.push(like.owner);
+      await post.save();
+    }
 
-    post.likes.push(like);
-
-    await post.save();
-
-    return res.status(200).json({
+    return res.status(201).json({
       success: true,
-      data: post.like,
+      data: post.likes,
     });
   } else if (req.params.replyId) {
-    const reply = await Reply.find({ id: req.params.replyId });
+    const reply = await Reply.findById(req.params.replyId);
+    console.log("TRIGGERED");
+    console.log(reply);
+
+    if (!reply) {
+      return next(new ErrorResponse("La réponse n'existe pas.", 404));
+    }
+
+    let like;
 
     // Fill required fields for like
     req.body.likeTo = reply.id;
 
-    const like = await Like.create(req.body);
+    // Check if the user has already liked this reply
+    // If not add a like to it
+    like = await Like.findOne({ owner: connectedUser.id, likeTo: reply.id });
+    if (!like) {
+      like = await Like.create(req.body);
+      reply.likes.push(like.owner);
+      await reply.save();
+    }
 
-    reply.likes.push(like);
+    return res.status(201).json({
+      success: true,
+      data: reply.likes,
+    });
+  } else {
+    return next(new ErrorResponse("le post ou la réponse n'existe pas.", 404));
+  }
+});
 
-    await reply.save();
+// @desc      Delete Likes
+// @route     DELETE /api/v1/posts/:postId/likes
+// @route     DELETE /api/v1/replies/:replyId/likes
+// @access    Public
+exports.deleteLike = asyncHandler(async (req, res, next) => {
+  const connectedUser = req.user;
+
+  if (req.params.postId) {
+    const post = await Post.findById(req.params.postId);
+
+    if (!post) {
+      return next(new ErrorResponse("Ce post n'existe pas."), 403);
+    }
+
+    const like = await Like.findOne({
+      owner: connectedUser.id,
+      likeTo: post.id,
+    });
+
+    if (!like) {
+      return next(
+        new ErrorResponse("Vous n'avez pas ajouté de like pour ce post"),
+        400
+      );
+    }
+
+    if (like.owner.toString() !== connectedUser.id.toString()) {
+      return next(
+        new ErrorResponse("Vous n'êtes pas autorisé à supprimer ce like"),
+        403
+      );
+    }
+
+    await like.delete();
+    await post.update({ $pull: { likes: connectedUser.id } });
 
     return res.status(200).json({
       success: true,
-      data: reply.like,
+      data: {},
     });
-  } else {
-    return next(new ErrorResponse("le post ou la réponse n'existe pas.", 400));
   }
+
+  if (req.params.replyId) {
+    const reply = await Reply.findById(req.params.replyId);
+
+    if (!reply) {
+      return next(new ErrorResponse("Ce reply n'existe pas."), 403);
+    }
+
+    const like = await Like.findOne({
+      owner: connectedUser.id,
+      likeTo: reply.id,
+    });
+
+    if (!like) {
+      return next(
+        new ErrorResponse("Vous n'avez pas ajouté de like pour cette réponse"),
+        400
+      );
+    }
+
+    if (like.owner.toString() !== connectedUser.id.toString()) {
+      return next(
+        new ErrorResponse("Vous n'êtes pas autorisé à supprimer ce like"),
+        403
+      );
+    }
+
+    await like.delete();
+    await reply.update({ $pull: { likes: connectedUser.id } });
+
+    return res.status(200).json({
+      success: true,
+      data: {},
+    });
+  }
+
+  next();
 });
