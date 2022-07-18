@@ -1,7 +1,7 @@
 const express = require("express");
 const User = require("../models/User");
 const advancedResults = require("../middlewares/advancedResults");
-const { protect, authorize } = require("../middlewares/auth");
+const { protect } = require("../middlewares/auth");
 const postRouter = require("./post");
 const {
   createUser,
@@ -9,6 +9,8 @@ const {
   getUser,
   updateUser,
   deleteUser,
+  userPhotoUpload,
+  userCoverUpload,
 } = require("../controllers/user");
 const router = express.Router();
 
@@ -20,7 +22,10 @@ router.route("/").get(advancedResults(User), getUsers).post(createUser);
 router
   .route("/:id")
   .get(getUser)
-  .put(protect, authorize("admin", "user"), updateUser)
-  .delete(protect, authorize("admin", "user"), deleteUser);
+  .put(protect, updateUser)
+  .delete(protect, deleteUser);
+
+router.route("/:id/photo").put(protect, userPhotoUpload);
+router.route("/:id/cover").put(protect, userCoverUpload);
 
 module.exports = router;

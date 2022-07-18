@@ -1,7 +1,7 @@
 const asyncHandler = require("../middlewares/asyncHandler");
 const User = require("../models/User");
 const ErrorResponse = require("../utils/errorResponse");
-
+const path = require("path");
 /**
  * @date      2022-06-22
  * @desc      Create user
@@ -112,5 +112,133 @@ exports.deleteUser = asyncHandler(async (req, res, next) => {
   res.status(200).json({
     success: true,
     data: {},
+  });
+});
+
+/**
+ * @date      2022-06-22
+ * @desc      Update user photo
+ * @route     PUT /api/v1/users/:id/photo
+ * @access    Private
+ */
+exports.userPhotoUpload = asyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.params.id);
+
+  if (!user) {
+    return next(
+      new ErrorResponse(
+        `Utilisateur avec l'id ${req.params.id} introuvable`,
+        404
+      )
+    );
+  }
+
+  // Make sure that this is the user
+  if (user.id.toString() !== req.user.id && req.user.role !== "admin") {
+    return next(
+      new ErrorResponse(
+        `Vous n'êtes pas authorisés à modifier cet utilisateur`,
+        401
+      )
+    );
+  }
+
+  if (!req.files) {
+    return next(new ErrorResponse(`Veuillez envoyer une image`, 400));
+  }
+
+  const file = req.files.file;
+
+  // Make sure the image is a photo
+  if (!file.mimetype.startsWith("image")) {
+    return next(new ErrorResponse(`Please upload an image file`, 400));
+  }
+
+  // Check filesize
+  if (file.size > process.env.MAX_FILE_UPLOAD) {
+    return next(
+      new ErrorResponse(`Veuillez ajouter une image de moins de  1mo`, 400)
+    );
+  }
+
+  // Create custom filename
+  file.name = `photo_${user._id}${path.parse(file.name).ext}`;
+
+  console.log(file.name);
+  file.mv(`${process.env.FILE_UPLOAD_PATH}/${file.name}`, async (err) => {
+    if (err) {
+      console.error(err);
+      return next(new ErrorResponse(`Problem with file upload`, 500));
+    }
+
+    await User.findByIdAndUpdate(req.params.id, { profilePicture: file.name });
+
+    res.status(200).json({
+      success: true,
+      data: file.name,
+    });
+  });
+});
+
+/**
+ * @desc      Upload cover for user
+ * @route     PUT /api/v1/users/:id/cover
+ * @access    Private
+ */
+exports.userCoverUpload = asyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.params.id);
+
+  if (!user)
+    return next(
+      new ErrorResponse(
+        `L'utilisateur avec l'id ${req.params.id} n'existe pas`,
+        404
+      )
+    );
+
+  if (user.id !== req.user.id)
+    return next(
+      new ErrorResponse(
+        `Vous n'êtes pas authorisé à modifier la photo cet utilisateur`,
+        401
+      )
+    );
+
+  if (!req.files)
+    return next(new ErrorResponse(`Veuillez envoyer une image.`, 400));
+
+  const file = req.files.file;
+
+  // Make sure the image is a photo
+  if (!file.mimetype.startsWith("image"))
+    return next(new ErrorResponse(`Veuillez envoyer une image.`, 400));
+
+  // Check filesize
+  if (file.size > process.env.MAX_FILE_UPLOAD)
+    return next(
+      new ErrorResponse(`Veuillez envoyer une image de 2Mo ou moins`, 400)
+    );
+
+  // Create custom filename
+  file.name = `cover_${user.id}${path.parse(file.name).ext}`;
+
+  // Move file to ./public/uploads
+  file.mv(`${process.env.FILE_UPLOAD_PATH}/${file.name}`, async (err) => {
+    if (err)
+      return next(
+        new ErrorResponse(
+          `Une erreur est survenue durant le transfert d'image`,
+          500
+        )
+      );
+
+    await User.findByIdAndUpdate(req.params.id, {
+      backgroundPicture: file.name,
+    });
+
+    res.status(200).json({
+      success: true,
+      data: file.name,
+    });
   });
 });
