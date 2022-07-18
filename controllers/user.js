@@ -322,12 +322,14 @@ exports.unsave = asyncHandler(async (req, res, next) => {
  */
 exports.addFollow = asyncHandler(async (req, res, next) => {
   let user = await User.findById(req.params.id);
+  const connectedUser = req.user;
+  const userToFollow = req.body.userId;
 
   if (!user) {
     return next(new ErrorResponse("Cet utilisateur n'existe pas"), 404);
   }
 
-  if (req.user.id !== req.params.id) {
+  if (connectedUser.id !== req.params.id) {
     return next(
       new ErrorResponse("Vous n'êtes pas autorisé à modifier cet utilisateur"),
       403
@@ -335,18 +337,22 @@ exports.addFollow = asyncHandler(async (req, res, next) => {
   }
 
   // Check if the post as alerady been saved
-  const isPostExists = user.saves.find((postId) => {
-    // Expect a postId in body
-    return postId.toString() === req.body.postId.toString();
+  const isFollowExists = user.following.find((userId) => {
+    return userId?.toString() === userToFollow.toString();
   });
 
-  if (!isPostExists) {
-    user.saves.push(req.body.postId);
+  if (!isFollowExists) {
+    user.following.push(userToFollow);
     await user.save();
+
+    // Add a follower to the user to follow array
+    await User.findByIdAndUpdate(userToFollow, {
+      $push: { followers: connectedUser.id },
+    });
   }
 
   res.status(201).json({
     success: true,
-    data: user.saves,
+    data: user.following,
   });
 });
