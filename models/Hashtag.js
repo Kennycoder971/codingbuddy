@@ -19,8 +19,8 @@ const HashTagSchema = new mongoose.Schema({
 });
 
 // Add slug before save
-UserSchema.pre("save", async function (next) {
-  this.slug = slugify(this.username);
+HashTagSchema.pre("save", async function (next) {
+  this.slug = slugify(this.text.replace("#", ""));
   next();
 });
 

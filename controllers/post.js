@@ -20,6 +20,18 @@ exports.getPosts = asyncHandler(async (req, res, next) => {
   }
 });
 
+// @desc      Get a post by id
+// @route     GET /api/v1/posts/:id
+// @access    Public
+exports.getPostById = asyncHandler(async (req, res, next) => {
+  const post = await Post.findById(req.params.id);
+
+  return res.status(200).json({
+    success: true,
+    data: post,
+  });
+});
+
 /**
  * @date      2022-06-22
  * @desc      Create post

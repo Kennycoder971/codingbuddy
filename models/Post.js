@@ -13,7 +13,7 @@ const PostSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
-  hashtags: [{ type: mongoose.Schema.Types.ObjectId, ref: "Hashtag" }],
+  hashtags: [String],
   replies: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
   createdAt: {
     type: Date,

@@ -25,6 +25,7 @@ const authRoute = require("./routes/auth");
 const postRoute = require("./routes/post");
 const replyRoute = require("./routes/reply");
 const likeRoute = require("./routes/like");
+const hashtagRoute = require("./routes/hashtag");
 
 // Body parser
 app.use(express.json());
@@ -46,6 +47,7 @@ app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/posts", postRoute);
 app.use("/api/v1/replies", replyRoute);
 app.use("/api/v1/likes", likeRoute);
+app.use("/api/v1/hashtags", hashtagRoute);
 
 // Handler errors
 app.use(errorHandler);

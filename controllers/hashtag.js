@@ -17,6 +17,22 @@ exports.getHashtags = asyncHandler(async (req, res, next) => {
 
 /**
  * @date      2022-06-22
+ * @desc      Get a hashtag by slug
+ * @route     GET /api/v1/hashtags/:slug
+ * @access    Public
+ */
+exports.getHashtagsBySlug = asyncHandler(async (req, res, next) => {
+  const slug = slugify(req.params.slug);
+  const hashtag = await Hashtag.findOne({ slug });
+
+  res.status(200).json({
+    success: true,
+    data: hashtag,
+  });
+});
+
+/**
+ * @date      2022-06-22
  * @desc      Create a hashtags with a post id
  * @route     POST /api/v1/posts/:postId/hashtags
  * @access    Private
@@ -47,7 +63,7 @@ exports.createHashtag = asyncHandler(async (req, res, next) => {
   if (hashtag) {
     // Check if hashtag already has postId in it
     const isPostExistsInHashtag = hashtag.posts.some((postId) => {
-      return postId === post.id;
+      return postId.toString() === post.id.toString();
     });
 
     if (!isPostExistsInHashtag) {
