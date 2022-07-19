@@ -336,7 +336,14 @@ exports.addFollow = asyncHandler(async (req, res, next) => {
     );
   }
 
-  // Check if the post as alerady been saved
+  if (connectedUser.id === userToFollowId) {
+    return next(
+      new ErrorResponse("Vous ne pouvez pas vous suivre vous même"),
+      400
+    );
+  }
+
+  // Check if the user as already been followed
   const isFollowExists = user.following.find((userId) => {
     return userId?.toString() === userToFollowId.toString();
   });
@@ -345,11 +352,62 @@ exports.addFollow = asyncHandler(async (req, res, next) => {
     user.following.push(userToFollowId);
     await user.save();
 
-    // Add a follower to the user to follow array
-    await User.findByIdAndUpdate(userToFollowId, {
-      $push: { followers: connectedUser.id },
+    // Check if the user to follow already has the connected user in is followers
+    const userToFollow = await User.findById(userToFollowId);
+
+    const isFollowerExists = userToFollow.followers.find((userId) => {
+      return userId?.toString() === connectedUser.id.toString();
     });
+
+    if (!isFollowerExists) {
+      // Add a follower to the user to follow array
+      await User.findByIdAndUpdate(userToFollowId, {
+        $push: { followers: connectedUser.id },
+      });
+    }
   }
+
+  res.status(201).json({
+    success: true,
+    data: user.following,
+  });
+});
+
+/**
+ * @date      2022-06-22
+ * @desc      Remove to a user to follow in the following array
+ * @route     DELETE /api/v1/users/:id/follow
+ * @access    Private
+ */
+exports.removeFollow = asyncHandler(async (req, res, next) => {
+  const connectedUser = req.user;
+  const userToRemoveId = req.body.userId;
+
+  let user = await User.findById(req.params.id);
+  if (!user) {
+    return next(new ErrorResponse("Cet utilisateur n'existe pas"), 404);
+  }
+
+  if (connectedUser.id !== req.params.id) {
+    return next(
+      new ErrorResponse("Vous n'êtes pas autorisé à modifier cet utilisateur"),
+      403
+    );
+  }
+
+  // Remove a user in the following array of the connected user
+  user = await User.findByIdAndUpdate(
+    connectedUser.id,
+    {
+      $pull: { following: userToRemoveId },
+    },
+    { new: true }
+  );
+
+  // Add a follower to the user to follow array
+  await User.findByIdAndUpdate(userToRemoveId, {
+    $pull: { followers: connectedUser.id },
+  });
 
   res.status(201).json({
     success: true,

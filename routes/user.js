@@ -14,6 +14,7 @@ const {
   save,
   unsave,
   addFollow,
+  removeFollow,
 } = require("../controllers/user");
 const router = express.Router();
 
@@ -29,7 +30,11 @@ router
   .delete(protect, deleteUser);
 
 router.route("/:id/save").put(protect, save).delete(protect, unsave);
-router.route("/:id/follow").put(protect, addFollow).delete(protect);
+
+router
+  .route("/:id/follow")
+  .put(protect, addFollow)
+  .delete(protect, removeFollow);
 
 router.route("/:id/photo").put(protect, userPhotoUpload);
 router.route("/:id/cover").put(protect, userCoverUpload);
