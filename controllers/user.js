@@ -316,15 +316,15 @@ exports.unsave = asyncHandler(async (req, res, next) => {
 
 /**
  * @date      2022-06-22
- * @desc      Save a post for a user
+ * @desc      Add to a user to follow in the following array
  * @route     PUT /api/v1/users/:id/follow
  * @access    Private
  */
 exports.addFollow = asyncHandler(async (req, res, next) => {
-  let user = await User.findById(req.params.id);
   const connectedUser = req.user;
-  const userToFollow = req.body.userId;
+  const userToFollowId = req.body.userId;
 
+  let user = await User.findById(req.params.id);
   if (!user) {
     return next(new ErrorResponse("Cet utilisateur n'existe pas"), 404);
   }
@@ -338,15 +338,15 @@ exports.addFollow = asyncHandler(async (req, res, next) => {
 
   // Check if the post as alerady been saved
   const isFollowExists = user.following.find((userId) => {
-    return userId?.toString() === userToFollow.toString();
+    return userId?.toString() === userToFollowId.toString();
   });
 
   if (!isFollowExists) {
-    user.following.push(userToFollow);
+    user.following.push(userToFollowId);
     await user.save();
 
     // Add a follower to the user to follow array
-    await User.findByIdAndUpdate(userToFollow, {
+    await User.findByIdAndUpdate(userToFollowId, {
       $push: { followers: connectedUser.id },
     });
   }
