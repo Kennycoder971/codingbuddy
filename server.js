@@ -13,10 +13,10 @@ const xss = require("xss-clean");
 const rateLimit = require("express-rate-limit");
 const hpp = require("hpp");
 const cors = require("cors");
-const connectDB = require("./configs/db");
+const connectDB = require("./db");
 
 // Load env fiels
-require("dotenv").config({ path: "./configs/config.env" });
+require("dotenv").config({ path: "./env" });
 
 // Connect to db
 connectDB();
