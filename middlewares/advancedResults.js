@@ -38,7 +38,7 @@ const advancedResults = (model, populate) => async (req, res, next) => {
 
   // Pagination
   const page = parseInt(req.query.page, 10) || 1;
-  let limit = parseInt(req.query.limit, 10) || 25;
+  let limit = parseInt(req.query.limit, 10) || 15;
   if (limit > 100) limit = 100;
   const startIndex = (page - 1) * limit;
   const endIndex = page * limit;

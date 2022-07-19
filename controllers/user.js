@@ -16,7 +16,10 @@ exports.createUser = asyncHandler(async (req, res, next) => {
   user = await User.findOne({ username }, user);
 
   if (user) {
-    return next(new ErrorResponse("Ce nom d'utilisateur est existant"), 400);
+    return next(
+      new ErrorResponse("Ce nom d'utilisateur est déjà existant"),
+      400
+    );
   }
 
   user = await User.findOne({ email });
