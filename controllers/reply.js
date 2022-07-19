@@ -12,25 +12,18 @@ const ErrorResponse = require("../utils/errorResponse");
  * @access    Private
  */
 exports.getReplies = asyncHandler(async (req, res, next) => {
-  if (req.params.userId) {
-    const posts = await Post.find({ id: req.params.postId });
+  if (req.params.postId) {
+    const replies = await Reply.find({ replyTo: req.params.postId });
 
     return res.status(200).json({
       success: true,
-      count: posts.length,
-      data: posts,
+      count: replies.length,
+      data: replies,
     });
   } else {
     res.status(200).json(res.advancedResults);
   }
 });
-
-/**
- * @date      2022-06-22
- * @desc      Create reply to a post
- * @route     POST /api/v1/posts/:postId/replies
- * @access    Private
- */
 
 /**
  * @date      2022-06-22

@@ -18,7 +18,6 @@ const ReplySchema = new mongoose.Schema({
     ref: "Post",
     required: true,
   },
-  hashtags: [{ type: mongoose.Schema.Types.ObjectId, ref: "Hashtag" }],
   replies: [{ type: mongoose.Schema.Types.ObjectId, ref: "Reply" }],
   createdAt: {
     type: Date,

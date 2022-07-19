@@ -70,7 +70,7 @@ UserSchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password, salt);
 });
 
-// Encrypt password using bcrypt
+// Add slug before save
 UserSchema.pre("save", async function (next) {
   this.slug = slugify(this.username);
   next();

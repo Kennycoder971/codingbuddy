@@ -1,11 +1,27 @@
 const mongoose = require("mongoose");
+const slugify = require("slugify");
 
 const HashTagSchema = new mongoose.Schema({
-  text: String,
+  text: {
+    type: String,
+  },
+  slug: {
+    type: String,
+    unique: true,
+  },
+  posts: {
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
+  },
   createdAt: {
     type: Date,
     default: Date.now,
   },
+});
+
+// Add slug before save
+UserSchema.pre("save", async function (next) {
+  this.slug = slugify(this.username);
+  next();
 });
 
 module.exports = mongoose.model("Hashtag", HashTagSchema);

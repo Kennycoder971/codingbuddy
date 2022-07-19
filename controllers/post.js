@@ -51,7 +51,7 @@ exports.updatePost = asyncHandler(async (req, res, next) => {
   let post = await Post.findById(req.params.id);
 
   if (!post) {
-    return next(new ErrorResponse("Ce post n'existe pas"), 400);
+    return next(new ErrorResponse("Ce post n'existe pas"), 404);
   }
 
   post = await Post.findByIdAndUpdate(req.params.id, req.body, {
