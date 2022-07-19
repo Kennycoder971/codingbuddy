@@ -2,6 +2,7 @@ const asyncHandler = require("../middlewares/asyncHandler");
 const ErrorResponse = require("../utils/errorResponse");
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
+const slugify = require("slugify");
 
 /**
  * @date      2022-06-22
@@ -11,8 +12,12 @@ const bcrypt = require("bcryptjs");
  */
 exports.register = asyncHandler(async (req, res, next) => {
   const { username, email } = req.body;
+  const slugifiedUsername = slugify(username);
 
-  let user = await User.findOne({ username });
+  // Check if slug of the username exists as well
+  let user = await User.findOne({
+    $or: [{ username }, { slug: slugifiedUsername }],
+  });
 
   if (user) {
     return next(new ErrorResponse("Cet utilisateur existe déjà", 400));

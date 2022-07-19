@@ -1,14 +1,19 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const slugify = require("slugify");
 
 const UserSchema = new mongoose.Schema({
   username: {
     type: String,
     required: [true, "Veuillez ajouter un nom d'utilisateur"],
     unique: [true, "Ce nom d'utilisateur existe déjà"],
+    trim: true,
   },
   firstname: {
+    type: String,
+  },
+  slug: {
     type: String,
   },
   lastname: {
@@ -63,6 +68,12 @@ UserSchema.pre("save", async function (next) {
 
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
+});
+
+// Encrypt password using bcrypt
+UserSchema.pre("save", async function (next) {
+  this.slug = slugify(this.username);
+  next();
 });
 
 // Sign JWT and return it
