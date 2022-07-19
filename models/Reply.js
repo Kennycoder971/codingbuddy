@@ -28,7 +28,6 @@ const ReplySchema = new mongoose.Schema({
     default: Date.now,
   },
 
-  // To know the reply chain
   // A post can have a reply. This reply can have other replies and so on.
   // Post <= Reply (to post or replyTo in model) <= Reply (to 1st reply) <= Reply (to 2nd reply)
   // Post <= Reply <= Reply <= Reply

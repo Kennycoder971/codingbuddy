@@ -1,7 +1,6 @@
 const asyncHandler = require("../middlewares/asyncHandler");
 const Hashtag = require("../models/Hashtag");
 const Post = require("../models/Post");
-const Reply = require("../models/Reply");
 const ErrorResponse = require("../utils/errorResponse");
 const slugify = require("slugify");
 
