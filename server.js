@@ -16,7 +16,7 @@ const cors = require("cors");
 const connectDB = require("./db");
 
 // Load env fiels
-require("dotenv").config({ path: "./env" });
+require("dotenv").config({ path: "./.env" });
 
 // Connect to db
 connectDB();

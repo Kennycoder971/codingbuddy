@@ -1,7 +1,8 @@
 const asyncHandler = require("../middlewares/asyncHandler");
 const User = require("../models/User");
 const ErrorResponse = require("../utils/errorResponse");
-const path = require("path");
+const processImage = require("../utils/processImage");
+
 /**
  * @date      2022-06-22
  * @desc      Create user
@@ -30,7 +31,7 @@ exports.createUser = asyncHandler(async (req, res, next) => {
 
   user = await User.create(req.body);
 
-  res.status(201).json({
+  res.status(200).json({
     success: true,
     data: user,
   });
@@ -53,7 +54,7 @@ exports.getUser = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse("Cet utilisateur n'existe pas"), 404);
   }
 
-  res.status(201).json({
+  res.status(200).json({
     success: true,
     data: user,
   });
@@ -84,7 +85,7 @@ exports.updateUser = asyncHandler(async (req, res, next) => {
     runValidators: true,
   });
 
-  res.status(201).json({
+  res.status(200).json({
     success: true,
     data: user,
   });
@@ -146,45 +147,13 @@ exports.userPhotoUpload = asyncHandler(async (req, res, next) => {
     );
   }
 
-  if (!req.files) {
-    return next(new ErrorResponse(`Veuillez envoyer une image`, 400));
-  }
+  const file = processImage(req, next, user, "photo");
 
-  const file = req.files.file;
+  await User.findByIdAndUpdate(req.params.id, { profilePicture: file.name });
 
-  // Make sure the image is a photo
-  if (!file.mimetype.startsWith("image")) {
-    return next(new ErrorResponse(`Please upload an image file`, 400));
-  }
-
-  // Check filesize
-  if (file.size > process.env.MAX_FILE_UPLOAD) {
-    return next(
-      new ErrorResponse(`Veuillez ajouter une image de moins de  1mo`, 400)
-    );
-  }
-
-  // Create custom filename
-  file.name = `photo_${user._id}${path.parse(file.name).ext}`;
-
-  console.log(file.name);
-  file.mv(`${process.env.FILE_UPLOAD_PATH}/${file.name}`, async (err) => {
-    if (err) {
-      console.error(err);
-      return next(
-        new ErrorResponse(
-          `Une erreur est survenue durant le transfert d'image`,
-          500
-        )
-      );
-    }
-
-    await User.findByIdAndUpdate(req.params.id, { profilePicture: file.name });
-
-    res.status(200).json({
-      success: true,
-      data: file.name,
-    });
+  res.status(200).json({
+    success: true,
+    data: file.name,
   });
 });
 
@@ -212,42 +181,15 @@ exports.userCoverUpload = asyncHandler(async (req, res, next) => {
       )
     );
 
-  if (!req.files)
-    return next(new ErrorResponse(`Veuillez envoyer une image.`, 400));
+  const file = processImage(req, next, user, "cover");
 
-  const file = req.files.file;
+  await User.findByIdAndUpdate(req.params.id, {
+    backgroundPicture: file.name,
+  });
 
-  // Make sure the image is a photo
-  if (!file.mimetype.startsWith("image"))
-    return next(new ErrorResponse(`Veuillez envoyer une image.`, 400));
-
-  // Check filesize
-  if (file.size > process.env.MAX_FILE_UPLOAD)
-    return next(
-      new ErrorResponse(`Veuillez envoyer une image de 1Mo ou moins`, 400)
-    );
-
-  // Create custom filename
-  file.name = `cover_${user.id}${path.parse(file.name).ext}`;
-
-  // Move file to ./public/uploads
-  file.mv(`${process.env.FILE_UPLOAD_PATH}/${file.name}`, async (err) => {
-    if (err)
-      return next(
-        new ErrorResponse(
-          `Une erreur est survenue durant le transfert d'image`,
-          500
-        )
-      );
-
-    await User.findByIdAndUpdate(req.params.id, {
-      backgroundPicture: file.name,
-    });
-
-    res.status(200).json({
-      success: true,
-      data: file.name,
-    });
+  res.status(200).json({
+    success: true,
+    data: file.name,
   });
 });
 
@@ -311,7 +253,7 @@ exports.unsave = asyncHandler(async (req, res, next) => {
   // Expect a postId in body
   await user.update({ $pull: { saves: req.body.postId } });
 
-  res.status(201).json({
+  res.status(200).json({
     success: true,
     data: {},
   });
@@ -412,7 +354,7 @@ exports.removeFollow = asyncHandler(async (req, res, next) => {
     $pull: { followers: connectedUser.id },
   });
 
-  res.status(201).json({
+  res.status(200).json({
     success: true,
     data: user.following,
   });
