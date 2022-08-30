@@ -49,6 +49,9 @@ const UserSchema = new mongoose.Schema({
   saves: {
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
   },
+  posts: {
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
+  },
   reposts: {
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
   },
