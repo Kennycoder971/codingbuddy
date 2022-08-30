@@ -8,7 +8,9 @@ const ErrorResponse = require("../utils/errorResponse");
 // @access    Public
 exports.getPosts = asyncHandler(async (req, res, next) => {
   if (req.params.userId) {
-    const posts = await Post.find({ ownerId: req.params.userId });
+    const posts = await Post.find({ ownerId: req.params.userId }).sort({
+      createdAt: "-1",
+    });
 
     return res.status(200).json({
       success: true,
