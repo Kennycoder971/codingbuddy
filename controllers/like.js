@@ -25,8 +25,8 @@ exports.getLikes = asyncHandler(async (req, res, next) => {
 
     return res.status(200).json({
       success: true,
-      count: reply.likes.length,
-      data: reply.likes,
+      count: reply.likes.length || 0,
+      data: reply.likes || [],
     });
   }
 
