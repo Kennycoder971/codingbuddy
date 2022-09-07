@@ -15,8 +15,8 @@ exports.getLikes = asyncHandler(async (req, res, next) => {
 
     return res.status(200).json({
       success: true,
-      count: post.likes.length,
-      data: post.likes,
+      count: post.likes.length || 0,
+      data: post.likes || [],
     });
   }
 
@@ -33,7 +33,7 @@ exports.getLikes = asyncHandler(async (req, res, next) => {
   res.status(200).json(res.advancedResults);
 });
 
-// @desc      Create a Like for a post of a reply
+// @desc      Create a Like for a post or a reply
 // @route     POST /api/v1/post/postId/likes
 // @route     POST /api/v1/reply/replyId/likes
 // @access    Private
